@@ -89,10 +89,19 @@ h2{font-size:20px;margin:28px 0 10px}.tw{overflow-x:auto}table{width:100%;border
 .pk{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pk>div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px;text-align:center}.pe2{font-size:2.6em}.pk b{display:block;font-size:1.6em}.pk b.y{color:#2e7d32}.pk b.n{color:#c62828}
 .ac{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.ac>div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:8px;text-align:center}.aw{position:relative;display:inline-block}.aw .av{width:3.4em;height:3.4em}.aw span{position:absolute;right:-.9em;bottom:0;font-size:1.5em}
 @media(max-width:720px){.ac{grid-template-columns:1fr 1fr}.os.g4{grid-template-columns:1fr 1fr}}
+.fxo{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(10,14,25,.72);opacity:0;pointer-events:none;transition:opacity .25s}.fxo.on{opacity:1;pointer-events:auto}
+.fxc{display:flex;flex-direction:column;align-items:center;gap:8px;transform:translateY(40px) scale(.7)}.fxo.on .fxc{animation:fxp .45s cubic-bezier(.2,1.4,.4,1) forwards}
+.fxc img{max-height:68vh;max-width:80vw;object-fit:contain;filter:drop-shadow(0 8px 20px rgba(0,0,0,.5))}
+.fxc b{color:#fff;font-size:clamp(18px,3.4vh,28px);text-shadow:0 2px 8px rgba(0,0,0,.5);text-align:center;padding:6px 14px;border-radius:12px}
+.fxo.dogru .fxc b{background:#16a34a}.fxo.yanlis .fxc b{background:#dc2626}.fxo.bos .fxc b{background:#d97706}
+@keyframes fxp{to{transform:translateY(0) scale(1)}}
+@media (prefers-reduced-motion:reduce){.fxo.on .fxc{animation:none;transform:none}}
+.fxbar{display:flex;justify-content:flex-end;margin-bottom:8px}.tr2{display:flex;gap:8px;align-items:center}
+.fxt{background:var(--card);border:1px solid var(--bd);color:var(--tx);border-radius:999px;padding:5px 12px;font:inherit;font-size:.85rem;cursor:pointer;white-space:nowrap}.fxt:hover{border-color:var(--pr)}
 </style>
 </head>
 <body>
-<div class="w"><div id="app"></div></div>
+<div class="w"><div class="fxbar"><button class="fxt"></button></div><div id="app"></div></div>
 <div class="ov" id="ov"><div class="pop" id="pop"></div></div>
 <script src="dersler.js"></script>
 <script>
@@ -120,6 +129,26 @@ function tests(){var d=D[S.d],u=d.uniteler[S.u],R=ld(),rows='';
 function start(t,key){Q={t:t,i:0,ans:[],key:key,a:false};ov.classList.add('on');show()}
 function close(){ov.classList.remove('on');if(S.u!==null)tests()}
 function bl(s){return h(s).replace(/_{3,}/g,'<span class="blank"></span>').replace(/\{\{(.+?)\}\}/g,'<u>$1</u>')}
+var EFX=true;try{EFX=localStorage.getItem('tcp_fx')!=='0'}catch(e){}
+function fxLab(){return EFX?'🔊 Efektler: Açık':'🔇 Efektler: Kapalı'}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.fxt');if(!b)return;EFX=!EFX;try{localStorage.setItem('tcp_fx',EFX?'1':'0')}catch(x){}document.querySelectorAll('.fxt').forEach(function(z){z.textContent=fxLab()})});
+var FX={t:0,nodes:[],au:null},AC;
+function ac(){AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}
+function stopSfx(){try{speechSynthesis.cancel()}catch(e){}FX.nodes.forEach(function(n){try{n.stop()}catch(e){}});FX.nodes=[];if(FX.au){try{FX.au.pause()}catch(e){}FX.au=null}}
+function buzz(){try{var c=ac(),t=c.currentTime,o=c.createOscillator(),g=c.createGain();o.type='sawtooth';o.frequency.value=110;g.gain.setValueAtTime(.25,t);g.gain.linearRampToValueAtTime(0,t+.9);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+1);FX.nodes.push(o)}catch(e){}}
+var SYN={
+ bos:function(){try{var c=ac(),t=c.currentTime,g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.35,t+.25);g.gain.linearRampToValueAtTime(.3,t+1.6);g.gain.linearRampToValueAtTime(0,t+2.5);g.connect(c.destination);
+  for(var i=0;i<14;i++){var o=c.createOscillator();o.type='sawtooth';var f0=110+Math.random()*120;o.frequency.setValueAtTime(f0*1.1,t);o.frequency.linearRampToValueAtTime(f0*.8,t+2.4);var lf=c.createOscillator(),lg=c.createGain();lf.frequency.value=5+Math.random()*2;lg.gain.value=f0*.015;lf.connect(lg);lg.connect(o.frequency);var b1=c.createBiquadFilter();b1.type='bandpass';b1.frequency.value=800;b1.Q.value=4;var b2=c.createBiquadFilter();b2.type='bandpass';b2.frequency.value=1200;b2.Q.value=5;o.connect(b1);o.connect(b2);var vg=c.createGain();vg.gain.value=.08;b1.connect(vg);b2.connect(vg);vg.connect(g);o.start(t);lf.start(t);o.stop(t+2.6);lf.stop(t+2.6);FX.nodes.push(o,lf)}}catch(e){}},
+ dogru:function(){try{var c=ac(),t=c.currentTime,n=Math.floor(c.sampleRate*2.7),buf=c.createBuffer(1,n,c.sampleRate),d=buf.getChannelData(0),k=0;for(var i=0;i<n;i++){if(k<=0&&Math.random()<.001)k=Math.floor(180+Math.random()*260);var v=0;if(k>0){v=(Math.random()*2-1)*(k/440);k--}d[i]=v*.9+(Math.random()*2-1)*.05}
+  var s=c.createBufferSource();s.buffer=buf;var f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=2200;f.Q.value=.7;var g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.9,t+.25);g.gain.setValueAtTime(.9,t+2.0);g.gain.linearRampToValueAtTime(0,t+2.7);s.connect(f);f.connect(g);g.connect(c.destination);s.start(t);FX.nodes.push(s)}catch(e){}},
+ yanlis:function(){var ok=false;try{if(window.speechSynthesis){var u=new SpeechSynthesisUtterance('Fuck you');u.lang='en-US';u.pitch=.3;u.rate=.8;u.volume=1;var vs=speechSynthesis.getVoices(),v=vs.filter(function(x){return /^en/i.test(x.lang)&&/male|david|daniel|alex|fred|george|mark|guy/i.test(x.name)&&!/female/i.test(x.name)})[0]||vs.filter(function(x){return /^en/i.test(x.lang)})[0];if(v)u.voice=v;speechSynthesis.cancel();speechSynthesis.speak(u);ok=true}}catch(e){}if(!ok)buzz()}};
+function playSfx(k){var started=false,a;try{a=new Audio('ses/'+k+'.mp3');FX.au=a;a.onplaying=function(){started=true};a.onerror=function(){if(!started){started=true;SYN[k]()}};var p=a.play();if(p&&p.catch)p.catch(function(){})}catch(e){}setTimeout(function(){if(!started){started=true;SYN[k]()}},450)}
+function adv(i){if(Q.i===i){Q.i++;show()}}
+function fx(k,q,qi){var o=document.getElementById('fx'),done=false;if(!o){o=document.createElement('div');o.id='fx';document.body.appendChild(o)}
+ var cap={dogru:'Doğru! 👏',yanlis:'Yanlış! Doğru cevap: '+q.cevap,bos:'Boş bıraktın! Doğru cevap: '+q.cevap}[k];
+ function fin(){if(done)return;done=true;clearTimeout(FX.t);o.classList.remove('on');stopSfx();setTimeout(function(){if(!o.classList.contains('on'))o.innerHTML=''},300);adv(qi)}
+ o.className='fxo '+k;o.innerHTML='<div class="fxc"><img src="'+(window.FXI||{})[k]+'" alt=""><b>'+h(cap)+'</b></div>';o.onclick=fin;
+ requestAnimationFrame(function(){o.classList.add('on')});playSfx(k);FX.t=setTimeout(fin,2800)}
 var AV={girl:['#f6c7a0','#e8b93a','pig','#e0559a'],boy:['#f2b98f','#6b3f23','short','#2f4a8a','B'],curly:['#e3b08a','#4a3426','curly','#8a94ad'],b1:['#8a5a3c','#2b1d14','afro','#6d7a8c'],b2:['#7a4b30','#1f1510','curly','#222'],b3:['#6b4228','#1a110c','short','#3d6b52'],val:['#f1c3a5','#1f1a1a','long','#f2d24a'],tif:['#8a5a3c','#1f1510','pig','#e8e8e8'],rog:['#e3b08a','#7a5a40','short','#222'],tom:['#d9a07a','#2b1d14','curly','#9aa5b8'],bet:['#e8b894','#111','bob','#b9bfd0'],ann:['#e8b894','#111','long','#9aa0b0','',1],john:['#f6c7a0','#f0d078','short','#f2d24a'],susan:['#f6c7a0','#f0d078','pig','#e0553a'],rachel:['#f2b98f','#1f1510','pig','#f08a3a'],mark:['#f2b98f','#e8742a','curly','#f0f0f0'],jus:['#f1c9a8','#2b2b2b','short','#b5c0cc'],dav:['#8a5a3c','#111','short','#a8b0bd'],car:['#a8714c','#1a1210','curly','#8a94ad'],tay:['#f1c9a8','#8a6a4a','long','#a8b0bd'],sam:['#f6c7a0','#9b6b3c','short','#8d8d96','',1],rac:['#f6d0b5','#b08a5a','curly','#d9d9df'],meg:['#7a4b30','#1a110c','curly','#c8ccd8'],lor:['#8a5a3c','#111','pig','#a8b0bd'],cam:['#d9a07a','#111','bob','#d8d8d8'],mik:['#f2b98f','#4a2f1f','short','#d9525a'],mic:['#f2b98f','#6b3f23','short','#2f4a8a'],fra:['#d9a07a','#1a120e','curly','#8fa0c8'],bra:['#f2b98f','#5a3a22','short','#7fc4b4'],kev:['#f6c7a0','#7a4a2a','short','#5aa9e6'],mar:['#a8714c','#2b1d14','short','#b8dc8a'],der:['#f6c7a0','#d33a2c','short','#3a2a1a'],mi2:['#f6c7a0','#7a4a2a','short','#d9363e'],ger:['#f6c7a0','#9b6b3c','short','#6fbf5a'],angel:['#cfcfd4','#2b2b30','bun','#a8a8b0'],alice:['#c9a98a','#111','pig','#f0f0f0'],ric:['#c8c8c8','#8a8a8a','short','#aaa'],jak:['#bdbdbd','#555','short','#f0f0f0'],dvd:['#c8c8c8','#222','short','#ddd'],mch:['#b8b8b8','#666','short','#999'],beg:['#f1c3a5','#6b5a50','pig','#c9c9d0'],cin:['#e3d7c8','#cfcfcf','curly','#d9d9dd'],eli:['#e8c0a0','#1f1a1a','long','#cfcfd6'],cig:['#f1c3a5','#2b2b30','long','#3a3a44','',1],sud:['#f1d0b0','#d8c8a0','long','#7a7a82'],ber:['#f1c3a5','#2b2b30','bob','#f0f0f0'],ali:['#f1c3a5','#2b2b30','long','#4a4a55'],jos:['#f1c3a5','#2b2b30','short','#4a4a55'],jud:['#f1c3a5','#2b2b30','bob','#4a4a55'],ada:['#f6c7a0','#7a4a2a','long','#e0559a'],hop:['#f6c7a0','#111','pig','#f0f0f0'],ste:['#f6c7a0','#d33a2c','short','#f2d24a'],wen:['#f6c7a0','#f09a2a','bun','#f4f4f4']};
 function av(k){var a=AV[k]||AV.boy,o='<svg class="av" viewBox="0 0 48 48" aria-hidden="true"><path d="M8 48c0-10 7-15 16-15s16 5 16 15z" fill="'+a[3]+'"/>';
  if(a[2]==='bun')o+='<circle cx="24" cy="8" r="6.5" fill="'+a[1]+'"/>';
@@ -168,16 +197,16 @@ function show(){var t=Q.t,n=t.sorular.length;
   pop.innerHTML='<div class="top"><span>'+h(t.ad)+' sonucu</span><button class="x" id="x">×</button></div><div class="res"><div class="big">'+fn(net)+'</div><p>Toplam net</p></div><div class="st"><div><b>'+n+'</b><span>Soru</span></div><div><b>'+dg+'</b><span>Doğru</span></div><div><b>'+yl+'</b><span>Yanlış</span></div><div><b>'+bs+'</b><span>Boş</span></div><div><b>'+fn(net)+'</b><span>Net</span></div></div><p class="note">Net = doğru − yanlış ÷ 3. Sonuç kayıtlarına eklendi.</p><div class="act"><button class="btn" id="r">Tekrar çöz</button><a class="btn g" href="'+h(t.link)+'" target="_blank" rel="noopener">Çözüm videoları sayfası</a><button class="btn g" id="k">Kapat</button></div>';
   document.getElementById('x').onclick=document.getElementById('k').onclick=close;document.getElementById('r').onclick=function(){start(t,Q.key)};return}
  var q=t.sorular[Q.i],last=Q.i+1>=n,two=q.b&&q.b.length;Q.a=false;
- pop.innerHTML='<div class="top"><span>'+h(t.ad)+' · Soru '+(Q.i+1)+' / '+n+'</span><button class="x" id="x">×</button></div><div class="bar"><i style="width:'+(Q.i/n*100)+'%"></i></div><div class="mn'+(two&&!q.w?' two':'')+'">'+(two?'<div class="sti">'+q.b.map(blk).join('')+'</div>':'')+'<div><p class="qt">'+bl(q.s)+'</p><div class="os'+(q.g?' g'+(q.g==4?' g4':''):'')+'">'+q.o.map(function(x,i){var l='ABCD'.charAt(i);return '<button class="o" data-l="'+l+'"><b>'+l+'</b>'+ob(x)+'</button>'}).join('')+'</div></div></div><div class="ft"><div class="fb" id="fb"></div><div class="act"><button class="btn g" id="n">'+(last?'Boş bırak, bitir':'Boş geç')+'</button><a class="btn g" href="'+h(t.link)+'" target="_blank" rel="noopener">Çözüm videosu sayfası</a></div></div>';
+ pop.innerHTML='<div class="top"><span>'+h(t.ad)+' · Soru '+(Q.i+1)+' / '+n+'</span><span class="tr2"><button class="fxt">'+fxLab()+'</button><button class="x" id="x">×</button></span></div><div class="bar"><i style="width:'+(Q.i/n*100)+'%"></i></div><div class="mn'+(two&&!q.w?' two':'')+'">'+(two?'<div class="sti">'+q.b.map(blk).join('')+'</div>':'')+'<div><p class="qt">'+bl(q.s)+'</p><div class="os'+(q.g?' g'+(q.g==4?' g4':''):'')+'">'+q.o.map(function(x,i){var l='ABCD'.charAt(i);return '<button class="o" data-l="'+l+'"><b>'+l+'</b>'+ob(x)+'</button>'}).join('')+'</div></div></div><div class="ft"><div class="fb" id="fb"></div><div class="act"><button class="btn g" id="n">'+(last?'Boş bırak, bitir':'Boş geç')+'</button><a class="btn g" href="'+h(t.link)+'" target="_blank" rel="noopener">Çözüm videosu sayfası</a></div></div>';
  document.getElementById('x').onclick=close;
- var nb=document.getElementById('n');nb.onclick=function(){Q.i++;show()};
+ var nb=document.getElementById('n');nb.onclick=function(){var qi=Q.i;if(Q.a){adv(qi)}else{Q.a=true;if(EFX)fx('bos',q,qi);else adv(qi)}};
  pop.querySelectorAll('.o').forEach(function(b){b.onclick=function(){if(Q.a)return;Q.a=true;var l=b.dataset.l,fb=document.getElementById('fb');Q.ans[Q.i]=l;
   pop.querySelectorAll('.o').forEach(function(o){o.disabled=true;if(o.dataset.l===q.cevap)o.classList.add('ok')});
   if(l===q.cevap){fb.className='fb ok';fb.textContent='Doğru! Cevap: '+q.cevap}else{b.classList.add('no');fb.className='fb no';fb.textContent='Yanlış. Doğru cevap: '+q.cevap}
-  nb.className='btn';nb.textContent=last?'Sonucu gör':'Sonraki soru'}});}
+  nb.className='btn';nb.textContent=last?'Sonucu gör':'Sonraki soru';if(EFX)fx(l===q.cevap?'dogru':'yanlis',q,Q.i)}});}
 ov.addEventListener('click',function(e){if(e.target===ov)close()});
-document.addEventListener('keydown',function(e){if(!ov.classList.contains('on'))return;if(e.key==='Escape')close();var k=e.key.toUpperCase(),b=pop.querySelector('.o[data-l="'+k+'"]');if(b&&!b.disabled)b.click();if(e.key==='Enter'){var n=document.getElementById('n');if(n&&n.style.display!=='none')n.click()}});
-home();
+document.addEventListener('keydown',function(e){if(!ov.classList.contains('on')||document.querySelector('#fx.on'))return;if(e.key==='Escape')close();var k=e.key.toUpperCase(),b=pop.querySelector('.o[data-l="'+k+'"]');if(b&&!b.disabled)b.click();if(e.key==='Enter'){var n=document.getElementById('n');if(n&&n.style.display!=='none')n.click()}});
+home();document.querySelectorAll('.fxt').forEach(function(z){z.textContent=fxLab()});
 </script>
 </body>
 </html>
