@@ -98,6 +98,7 @@ h2{font-size:20px;margin:28px 0 10px}.tw{overflow-x:auto}table{width:100%;border
 @media (prefers-reduced-motion:reduce){.fxo.on .fxc{animation:none;transform:none}}
 .fxbar{display:flex;justify-content:flex-end;margin-bottom:8px}.tr2{display:flex;gap:8px;align-items:center}
 .fxt{background:var(--card);border:1px solid var(--bd);color:var(--tx);border-radius:999px;padding:5px 12px;font:inherit;font-size:.85rem;cursor:pointer;white-space:nowrap}.fxt:hover{border-color:var(--pr)}
+.rv{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;justify-content:center}.rv span{border-radius:999px;padding:3px 10px;font-size:.85em;border:1px solid var(--bd)}.rv .ok{background:var(--okb);color:var(--ok);border-color:var(--ok)}.rv .no{background:var(--nob);color:var(--no);border-color:var(--no)}.rv .bs{background:var(--bg);color:var(--mu)}
 </style>
 </head>
 <body>
@@ -143,9 +144,10 @@ var SYN={
   var s=c.createBufferSource();s.buffer=buf;var f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=2200;f.Q.value=.7;var g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.9,t+.25);g.gain.setValueAtTime(.9,t+2.0);g.gain.linearRampToValueAtTime(0,t+2.7);s.connect(f);f.connect(g);g.connect(c.destination);s.start(t);FX.nodes.push(s)}catch(e){}},
  yanlis:function(){var ok=false;try{if(window.speechSynthesis){var u=new SpeechSynthesisUtterance('Fuck you');u.lang='en-US';u.pitch=.3;u.rate=.8;u.volume=1;var vs=speechSynthesis.getVoices(),v=vs.filter(function(x){return /^en/i.test(x.lang)&&/male|david|daniel|alex|fred|george|mark|guy/i.test(x.name)&&!/female/i.test(x.name)})[0]||vs.filter(function(x){return /^en/i.test(x.lang)})[0];if(v)u.voice=v;speechSynthesis.cancel();speechSynthesis.speak(u);ok=true}}catch(e){}if(!ok)buzz()}};
 function playSfx(k){var started=false,a;try{a=new Audio('ses/'+k+'.mp3');FX.au=a;a.onplaying=function(){started=true};a.onerror=function(){if(!started){started=true;SYN[k]()}};var p=a.play();if(p&&p.catch)p.catch(function(){})}catch(e){}setTimeout(function(){if(!started){started=true;SYN[k]()}},450)}
+function ctx(q){var x=q.o['ABCD'.indexOf(q.c)],s=typeof x==='string'?x.replace(/\n/g,' / '):(x.i?'(fotoğraf)':(x.n||'(tablo)'));return q.c+') '+s}
 function adv(i){if(Q.i===i){Q.i++;show()}}
 function fx(k,q,qi){var o=document.getElementById('fx'),done=false;if(!o){o=document.createElement('div');o.id='fx';document.body.appendChild(o)}
- var cap={dogru:'Doğru! 👏',yanlis:'Yanlış! Doğru cevap: '+q.cevap,bos:'Boş bıraktın! Doğru cevap: '+q.cevap}[k];
+ var cap={dogru:'Doğru! 👏',yanlis:'Yanlış! Doğru cevap: '+ctx(q),bos:'Boş bıraktın! Doğru cevap: '+ctx(q)}[k];
  function fin(){if(done)return;done=true;clearTimeout(FX.t);o.classList.remove('on');stopSfx();setTimeout(function(){if(!o.classList.contains('on'))o.innerHTML=''},300);adv(qi)}
  o.className='fxo '+k;o.innerHTML='<div class="fxc"><img src="'+(window.FXI||{})[k]+'" alt=""><b>'+h(cap)+'</b></div>';o.onclick=fin;
  requestAnimationFrame(function(){o.classList.add('on')});playSfx(k);FX.t=setTimeout(fin,2800)}
@@ -192,18 +194,18 @@ function blk(b){switch(b.t){
  case 'pn':return '<div class="pn"><div class="pq"><i>'+h(b.no)+'</i>'+bl(b.x)+'</div>'+b.c.map(function(c){return '<div class="pa">'+bl(c)+'</div>'}).join('')+'</div>';
 }return ''}
 function show(){var t=Q.t,n=t.sorular.length;
- if(Q.i>=n){var dg=0,yl=0;t.sorular.forEach(function(q,i){if(Q.ans[i]){if(Q.ans[i]===q.cevap)dg++;else yl++}});
-  var bs=n-dg-yl,net=dg-yl/3,R=ld();(R[Q.key]=R[Q.key]||[]).push({tarih:new Date().toLocaleString('tr-TR',{dateStyle:'short',timeStyle:'short'}),n:n,d:dg,y:yl,b:bs,net:net});sv(R);
-  pop.innerHTML='<div class="top"><span>'+h(t.ad)+' sonucu</span><button class="x" id="x">×</button></div><div class="res"><div class="big">'+fn(net)+'</div><p>Toplam net</p></div><div class="st"><div><b>'+n+'</b><span>Soru</span></div><div><b>'+dg+'</b><span>Doğru</span></div><div><b>'+yl+'</b><span>Yanlış</span></div><div><b>'+bs+'</b><span>Boş</span></div><div><b>'+fn(net)+'</b><span>Net</span></div></div><p class="note">Net = doğru − yanlış ÷ 3. Sonuç kayıtlarına eklendi.</p><div class="act"><button class="btn" id="r">Tekrar çöz</button><a class="btn g" href="'+h(t.link)+'" target="_blank" rel="noopener">Çözüm videoları sayfası</a><button class="btn g" id="k">Kapat</button></div>';
+ if(Q.i>=n){var dg=0,yl=0;t.sorular.forEach(function(q,i){if(Q.ans[i]){if(Q.ans[i]===q.c)dg++;else yl++}});
+  var bs=n-dg-yl,net=dg-yl/3,R=ld(),rv=t.sorular.map(function(q,i){var a=Q.ans[i];return '<span class="'+(a?(a===q.c?'ok':'no'):'bs')+'">'+(i+1)+' · '+(a?(a===q.c?a+' ✔':a+' → '+q.c):'boş → '+q.c)+'</span>'}).join('');(R[Q.key]=R[Q.key]||[]).push({tarih:new Date().toLocaleString('tr-TR',{dateStyle:'short',timeStyle:'short'}),n:n,d:dg,y:yl,b:bs,net:net});sv(R);
+  pop.innerHTML='<div class="top"><span>'+h(t.ad)+' sonucu</span><button class="x" id="x">×</button></div><div class="res"><div class="big">'+fn(net)+'</div><p>Toplam net</p></div><div class="st"><div><b>'+n+'</b><span>Soru</span></div><div><b>'+dg+'</b><span>Doğru</span></div><div><b>'+yl+'</b><span>Yanlış</span></div><div><b>'+bs+'</b><span>Boş</span></div><div><b>'+fn(net)+'</b><span>Net</span></div></div><p class="note">Net = doğru − yanlış ÷ 3. Sonuç kayıtlarına eklendi.</p><div class="rv">'+rv+'</div><div class="act"><button class="btn" id="r">Tekrar çöz</button><a class="btn g" href="'+h(t.link)+'" target="_blank" rel="noopener">Çözüm videoları sayfası</a><button class="btn g" id="k">Kapat</button></div>';
   document.getElementById('x').onclick=document.getElementById('k').onclick=close;document.getElementById('r').onclick=function(){start(t,Q.key)};return}
  var q=t.sorular[Q.i],last=Q.i+1>=n,two=q.b&&q.b.length;Q.a=false;
  pop.innerHTML='<div class="top"><span>'+h(t.ad)+' · Soru '+(Q.i+1)+' / '+n+'</span><span class="tr2"><button class="fxt">'+fxLab()+'</button><button class="x" id="x">×</button></span></div><div class="bar"><i style="width:'+(Q.i/n*100)+'%"></i></div><div class="mn'+(two&&!q.w?' two':'')+'">'+(two?'<div class="sti">'+q.b.map(blk).join('')+'</div>':'')+'<div><p class="qt">'+bl(q.s)+'</p><div class="os'+(q.g?' g'+(q.g==4?' g4':''):'')+'">'+q.o.map(function(x,i){var l='ABCD'.charAt(i);return '<button class="o" data-l="'+l+'"><b>'+l+'</b>'+ob(x)+'</button>'}).join('')+'</div></div></div><div class="ft"><div class="fb" id="fb"></div><div class="act"><button class="btn g" id="n">'+(last?'Boş bırak, bitir':'Boş geç')+'</button><a class="btn g" href="'+h(t.link)+'" target="_blank" rel="noopener">Çözüm videosu sayfası</a></div></div>';
  document.getElementById('x').onclick=close;
  var nb=document.getElementById('n');nb.onclick=function(){var qi=Q.i;if(Q.a){adv(qi)}else{Q.a=true;if(EFX)fx('bos',q,qi);else adv(qi)}};
  pop.querySelectorAll('.o').forEach(function(b){b.onclick=function(){if(Q.a)return;Q.a=true;var l=b.dataset.l,fb=document.getElementById('fb');Q.ans[Q.i]=l;
-  pop.querySelectorAll('.o').forEach(function(o){o.disabled=true;if(o.dataset.l===q.cevap)o.classList.add('ok')});
-  if(l===q.cevap){fb.className='fb ok';fb.textContent='Doğru! Cevap: '+q.cevap}else{b.classList.add('no');fb.className='fb no';fb.textContent='Yanlış. Doğru cevap: '+q.cevap}
-  nb.className='btn';nb.textContent=last?'Sonucu gör':'Sonraki soru';if(EFX)fx(l===q.cevap?'dogru':'yanlis',q,Q.i)}});}
+  pop.querySelectorAll('.o').forEach(function(o){o.disabled=true;if(o.dataset.l===q.c)o.classList.add('ok')});
+  if(l===q.c){fb.className='fb ok';fb.textContent='Doğru! Cevap: '+q.c}else{b.classList.add('no');fb.className='fb no';fb.textContent='Yanlış. Doğru cevap: '+q.c}
+  nb.className='btn';nb.textContent=last?'Sonucu gör':'Sonraki soru';if(EFX)fx(l===q.c?'dogru':'yanlis',q,Q.i)}});}
 ov.addEventListener('click',function(e){if(e.target===ov)close()});
 document.addEventListener('keydown',function(e){if(!ov.classList.contains('on')||document.querySelector('#fx.on'))return;if(e.key==='Escape')close();var k=e.key.toUpperCase(),b=pop.querySelector('.o[data-l="'+k+'"]');if(b&&!b.disabled)b.click();if(e.key==='Enter'){var n=document.getElementById('n');if(n&&n.style.display!=='none')n.click()}});
 home();document.querySelectorAll('.fxt').forEach(function(z){z.textContent=fxLab()});
